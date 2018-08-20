@@ -21,7 +21,7 @@ Read more about certificate pinning at [www.owasp.org](https://www.owasp.org/ind
 ## Implementation in Xamarin 
 Certificate pinning  is actually quite easy to implement in Xamarin. Simply, make the pin check before any service call is made. It is best to place your pin check right at the top in the MainApplication.cs or AppDelegate.cs for Android and IOS respectively.
 
-'''
+```
 using System;
 
 using Android.App;
@@ -68,6 +68,6 @@ namespace MyApp.Droid
      }
 }
 
-'''
+```
       
             
