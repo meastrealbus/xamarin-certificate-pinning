@@ -19,3 +19,55 @@ In practice, pinning means to associate the [X509 public key](https://en.wikiped
 Read more about certificate pinning at [www.owasp.org](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning)
 
 ## Implementation in Xamarin 
+Certificate pinning  is actually quite easy to implement in Xamarin. Simply, make the pin check before any service call is made. It is best to place your pin check right at the top in the MainApplication.cs or AppDelegate.cs for Android and IOS respectively.
+
+'''
+using System;
+
+using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Runtime;
+using Java.Util;
+using Plugin.CurrentActivity;
+using System.IO;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
+namespace MyApp.Droid
+{
+    [Application]
+    public class MainApplication : Application, Application.IActivityLifecycleCallbacks
+    {
+        public MainApplication(IntPtr handle, JniHandleOwnership transer)
+        : base(handle, transer)
+        {
+        }
+
+        public override void OnCreate()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.ServerCertificateValidationCallback = CertificateCheckHandler;
+
+            base.OnCreate();
+            ...
+            other initializations
+            ...
+            
+         }
+         
+         private bool CertificateCheckHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            var certPublicKey = certificate.GetPublicKeyString();
+            bool isCertOk = CertPinUtil.IsCertificateKeyRecognised(certPublicKey);
+            return isCertOk;
+            //return true;
+        }
+         
+     }
+}
+
+'''
+      
+            
